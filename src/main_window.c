@@ -50,8 +50,9 @@ GtkWidget   *progress_bar;
 Step        *current_step = NULL;
 guint        sequence_source_id = 0;
 
-
 static void save_file (void);
+
+static GtkWidget *main_window;
 
 static void
 tree_view_edited (GtkCellRendererText *cell,
@@ -905,6 +906,17 @@ create_main_window (void)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), vbox_sequence, label);
 
   gtk_widget_show_all (window);
-  
+
+  main_window = window;
+
   return window;
 }
+
+void set_mainwindow_title(const gchar *name)
+{
+  gchar tmp[200];
+
+  g_snprintf(tmp, sizeof(tmp), "GlowControl - %s", name);
+  gtk_window_set_title (GTK_WINDOW (main_window), tmp);
+}
+

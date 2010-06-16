@@ -39,11 +39,9 @@
 #include "step.h"
 #include "step_editor.h"
 #include "project.h"
-#include "main_window.h"
 #include "xml_writer.h"
 #include "xml_parser.h"
 #include "gfx.h"
-
 
 static void project_class_init (ProjectClass *class);
 static void project_init       (Project      *receiver);
@@ -209,6 +207,7 @@ project_new (GtkListStore *scene_store,
   gtk_list_store_clear (channel_store);
 
   load_default_channel_names (channel_store);
+  set_mainwindow_title("[new project]");
 
   return project;
 }
@@ -496,6 +495,8 @@ project_new_from_file (const gchar  *filename,
       project->filename = g_strdup (filename);
     }
 
+  set_mainwindow_title(g_basename(filename));
+
   return project;
 }
 
@@ -580,6 +581,8 @@ project_write_to_file (Project *project,
 
   project->dirty = FALSE;
   
+  set_mainwindow_title(g_basename(filename));
+
   return TRUE;
 }
 

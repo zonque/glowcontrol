@@ -17,18 +17,26 @@
  */
 
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <fcntl.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <linux/ioctl.h>
+#include <linux/input.h>
 
 #include "types.h"
 #include "remote.h"
 #include "main.h"
 #include "main_window.h"
+
+#define INPUT_DEVDIR "/dev/input/"
+#define REMOTE_STRING "Keyspan"
 
 static GIOChannel *iochan = NULL;
 static gint button_state[2];
@@ -42,13 +50,15 @@ remote_event (GIOChannel   *chan,
   gint state[2];
   gsize  n;
 
-  g_io_channel_read_chars (chan, buf, sizeof (buf), &n, NULL);
+  g_io_channel_read_chars (chan, (gchar *) buf, sizeof (buf), &n, NULL);
 
   if (n < 2)
     return TRUE;
 
   state[0] = buf[0] & 1 ? 1:0;
   state[1] = buf[0] & 2 ? 1:0;
+
+  printf(" XXX %02x %02x\n", state[0], state[1]);
 
   if (state[0])
     sync_received = TRUE;
@@ -62,13 +72,45 @@ remote_event (GIOChannel   *chan,
 gboolean
 remote_init (void)
 {
-  gint fd;
+  const gchar *name;
+  GDir *dir;
+  gint fd = -1;
 
-  fd = open (REMOTE_DEVICE, O_RDWR);
+  dir = g_dir_open (INPUT_DEVDIR, 0, NULL);
+  if (!dir)
+    {
+      g_warning ("unable to open %s\n", INPUT_DEVDIR);
+      return FALSE;
+    }
+
+  while ((name = g_dir_read_name (dir)))
+    {
+      gchar tmp[100];
+      gchar *fullpath = g_strconcat (INPUT_DEVDIR, G_DIR_SEPARATOR_S, name, NULL);
+
+      if (!fullpath)
+        continue;
+
+      fd = g_open (fullpath, O_RDONLY, 0444);
+      if (fd < 0)
+        continue;
+
+      g_free(fullpath);
+
+      if (ioctl(fd, EVIOCGNAME(sizeof(tmp)), tmp) < 0)
+        continue;
+
+      if (g_strncasecmp(tmp, REMOTE_STRING, strlen(REMOTE_STRING)) == 0)
+        break;
+
+      fd = -1;
+    }
+
+  g_dir_close(dir);
+
   if (fd < 0)
     {
-      g_warning ("unable to open remote control device '%s'\n",
-                 REMOTE_DEVICE);
+      g_warning ("unable to open remote control device\n");
       return FALSE;
     }
 

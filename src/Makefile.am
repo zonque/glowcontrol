@@ -19,8 +19,7 @@ glowcontrol_SOURCES = \
 	xml_writer.c xml_writer.h \
 	remote.c remote.h \
 	gfx.c gfx.h \
-        types.h intl.h
-        
+	types.h intl.h
 
 glowcontrol_LDADD = @GTK_LIBS@ -lusb
 

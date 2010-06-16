@@ -34,8 +34,8 @@ gint
 main (gint   argc, 
       gchar *argv[])
 {
-  GtkWidget *main_window;
   GtkWidget *dialog;
+  GtkWidget *main_window;
 
   g_type_init ();
   gtk_set_locale ();
@@ -71,17 +71,16 @@ main (gint   argc,
   scene_store    = gtk_list_store_new (5, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
   sequence_store = gtk_list_store_new (5, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
 
+  main_window = create_main_window ();
+  gtk_widget_show (main_window);
+
+  last_scene = NULL;
+  sync_received = FALSE;
+  
   if (argc > 1)
     project = project_new_from_file (argv[1], scene_store, sequence_store, channel_store);
   else
     project = project_new (scene_store, sequence_store, channel_store);
-
-
-  last_scene = NULL;
-  sync_received = FALSE;
-
-  main_window = create_main_window ();
-  gtk_widget_show (main_window);
 
   gtk_main ();
 
