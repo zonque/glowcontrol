@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,32 +40,32 @@
 #define REMOTE_STRING "Keyspan"
 
 static GIOChannel *iochan = NULL;
-static gint button_state[2];
 
 static gboolean
 remote_event (GIOChannel   *chan,
               GIOCondition  cond,
               gpointer      foo)
 {
-  guchar buf[0xff];
-  gint state[2];
+  struct input_event ev;
   gsize  n;
 
-  g_io_channel_read_chars (chan, (gchar *) buf, sizeof (buf), &n, NULL);
+  g_io_channel_read_chars (chan, (gchar *) &ev, sizeof (ev), &n, NULL);
 
-  if (n < 2)
+  if (n < sizeof(ev))
     return TRUE;
 
-  state[0] = buf[0] & 1 ? 1:0;
-  state[1] = buf[0] & 2 ? 1:0;
+  if ((ev.type != EV_KEY) || (ev.value != 1))
+    return TRUE;
 
-  printf(" XXX %02x %02x\n", state[0], state[1]);
+  switch (ev.code) {
+    case BTN_LEFT:
+      sync_received = TRUE;
+      break;
 
-  if (state[0])
-    sync_received = TRUE;
-
-  if (state[1])
-    sequence_back_to_sync ();
+    case BTN_RIGHT:
+      sequence_back_to_sync ();
+      break;
+  }
 
   return TRUE;
 }
@@ -117,9 +118,6 @@ remote_init (void)
   fcntl (fd, F_SETFL, O_NONBLOCK);
 
   iochan = g_io_channel_unix_new (fd);
-
-  button_state[0] = 0;
-  button_state[1] = 0;
 
   g_io_channel_set_encoding (iochan, NULL, NULL);
   g_io_add_watch (iochan, G_IO_IN, remote_event, NULL);
