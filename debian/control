@@ -3,7 +3,7 @@ Priority: optional
 Section: misc
 Maintainer: Daniel Mack <daniel@caiaq.de>
 Architecture: i386
-Version: 0.4
+Version: 0.4.1
 Depends: libc6 (>= 2.1), mpg123 (>= 1.0), libgtk2.0-0 (>= 2.0)
 Description: Glowcontrol light show controller software
  A tool to control light show systems, written in GTK+.

@@ -427,6 +427,26 @@ step_edit_clicked (void)
   project_open_step_editor (project, step);
 }
 
+static void
+sequence_scroll_to_selected (void)
+{
+  GtkTreeSelection *selection;
+  GList            *list, *node;
+
+  selection = gtk_tree_view_get_selection (sequence_view);
+  list = gtk_tree_selection_get_selected_rows(selection, NULL);
+  if (!list)
+    return;
+
+  for (node = list; node; node = node->next)
+    {
+      GtkTreePath *path = node->data;
+      gtk_tree_view_scroll_to_cell (sequence_view, path, NULL, TRUE, 0.5, 0.0);
+    }
+
+  g_list_free (list);
+}
+
 static gboolean
 sequence_first (void)
 {
@@ -439,6 +459,7 @@ sequence_first (void)
   selection = gtk_tree_view_get_selection (sequence_view);
 
   gtk_tree_selection_select_iter (selection, &iter);
+  sequence_scroll_to_selected ();
 
   return TRUE;
 }
@@ -471,6 +492,7 @@ sequence_prev (void)
     }
   
   gtk_tree_selection_select_path (selection, path);
+  sequence_scroll_to_selected ();
 }
 
 static gboolean
@@ -483,10 +505,12 @@ sequence_next (void)
 
   if (!gtk_tree_selection_get_selected (selection, NULL, &iter))
     return FALSE;
+
   if (!gtk_tree_model_iter_next (GTK_TREE_MODEL (sequence_store), &iter))
     return FALSE;
 
   gtk_tree_selection_select_iter (selection, &iter);
+  sequence_scroll_to_selected ();
 
   return TRUE;
 }
@@ -549,6 +573,8 @@ sequence_tick (gpointer *foo)
         last_scene = current_step->scene;
 
       current_step = NULL;
+      gtk_progress_bar_update (GTK_PROGRESS_BAR (progress_bar), 0);
+
       return TRUE;
     }
 

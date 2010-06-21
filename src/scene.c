@@ -40,7 +40,7 @@
 #include "xml_parser.h"
 
 static void scene_class_init (SceneClass *class);
-static void scene_init              (Scene      *scene);
+static void scene_init       (Scene      *scene);
 static void scene_finalize   (GObject    *object);
 
 static GObjectClass *parent_class = NULL;
@@ -157,7 +157,7 @@ scene_send_all_values (Scene *scene)
 {
   gint i, n[N_CHANNELS];
 
-  for (i=0; i<N_CHANNELS; i++)
+  for (i = 0; i < N_CHANNELS; i++)
     n[i] = i;
 
   output_channel_set (n, scene->channel, N_CHANNELS);
