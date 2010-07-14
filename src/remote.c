@@ -39,7 +39,30 @@
 #define INPUT_DEVDIR "/dev/input/"
 #define REMOTE_STRING "Keyspan"
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
 static GIOChannel *iochan = NULL;
+
+struct remote_device
+{
+  const char *name;
+  unsigned int sync_event;
+  unsigned int back_to_sync_event;
+};
+
+struct remote_device devices[] =
+{
+  {
+    .name = "Keyspan",
+    .sync_event = BTN_LEFT,
+    .back_to_sync_event = BTN_RIGHT,
+  },
+  {
+    .name = "VEC  VEC USB Footpedal",
+    .sync_event = BTN_0,
+    .back_to_sync_event = BTN_2,
+  },
+};
 
 static gboolean
 remote_event (GIOChannel   *chan,
@@ -47,7 +70,9 @@ remote_event (GIOChannel   *chan,
               gpointer      foo)
 {
   struct input_event ev;
-  gsize  n;
+  char tmp[100];
+  gsize n;
+  guint i;
 
   g_io_channel_read_chars (chan, (gchar *) &ev, sizeof (ev), &n, NULL);
 
@@ -57,15 +82,20 @@ remote_event (GIOChannel   *chan,
   if ((ev.type != EV_KEY) || (ev.value != 1))
     return TRUE;
 
-  switch (ev.code) {
-    case BTN_LEFT:
-      sync_received = TRUE;
-      break;
+  if (ioctl(g_io_channel_unix_get_fd (chan), EVIOCGNAME(sizeof(tmp)), tmp) < 0)
+    return TRUE;
 
-    case BTN_RIGHT:
-      sequence_back_to_sync ();
-      break;
-  }
+  for (i = 0; i < ARRAY_SIZE(devices); i++)
+    {
+      if (g_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
+        {
+          if (ev.code == devices[i].sync_event)
+              sync_received = TRUE;
+
+          if (ev.code == devices[i].back_to_sync_event)
+              sequence_back_to_sync ();
+        }
+    }
 
   return TRUE;
 }
@@ -75,7 +105,7 @@ remote_init (void)
 {
   const gchar *name;
   GDir *dir;
-  gint fd = -1;
+  gint count = 0;
 
   dir = g_dir_open (INPUT_DEVDIR, 0, NULL);
   if (!dir)
@@ -86,6 +116,8 @@ remote_init (void)
 
   while ((name = g_dir_read_name (dir)))
     {
+      gint fd;
+      guint i;
       gchar tmp[100];
       gchar *fullpath = g_strconcat (INPUT_DEVDIR, G_DIR_SEPARATOR_S, name, NULL);
 
@@ -101,26 +133,30 @@ remote_init (void)
       if (ioctl(fd, EVIOCGNAME(sizeof(tmp)), tmp) < 0)
         continue;
 
-      if (g_strncasecmp(tmp, REMOTE_STRING, strlen(REMOTE_STRING)) == 0)
-        break;
+      printf ("Found input device with name >%s<\n", tmp);
 
-      fd = -1;
-    }
+      for (i = 0; i < ARRAY_SIZE(devices); i++)
+        {
+          if (g_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
+            {
+              fcntl (fd, F_SETFL, O_NONBLOCK);
+
+              iochan = g_io_channel_unix_new (fd);
+
+              g_io_channel_set_encoding (iochan, NULL, NULL);
+              g_io_add_watch (iochan, G_IO_IN, remote_event, NULL);
+
+              count++;
+            }
+        }
+    } /* while */
 
   g_dir_close(dir);
 
-  if (fd < 0)
-    {
-      g_warning ("unable to open remote control device\n");
+  if (count == 0) {
+      g_warning ("unable to open any remote control device\n");
       return FALSE;
-    }
-
-  fcntl (fd, F_SETFL, O_NONBLOCK);
-
-  iochan = g_io_channel_unix_new (fd);
-
-  g_io_channel_set_encoding (iochan, NULL, NULL);
-  g_io_add_watch (iochan, G_IO_IN, remote_event, NULL);
+  }
 
   return TRUE;
 }
