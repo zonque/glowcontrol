@@ -768,6 +768,7 @@ create_main_window (void)
   /*** SETUP GTK MAIN WINDOW ***/
   
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_default_size(GTK_WINDOW (window), 800, 600);
   gtk_object_set_data (GTK_OBJECT (window), "main_window", window);
 //  gtk_widget_set_usize (window, 800, 600);
   gtk_window_set_title (GTK_WINDOW (window), "GlowControl");
@@ -870,27 +871,27 @@ create_main_window (void)
 
   hbox = gtk_hbox_new (TRUE, 0);
 
-  button = button_new ("../pixmaps/first.xpm", _("First"), FALSE);
+  button = button_new ("first.xpm", _("First"), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (sequence_first), NULL);
 
-  button = button_new ("../pixmaps/prev.xpm", _("Previous"), FALSE);
+  button = button_new ("prev.xpm", _("Previous"), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (sequence_prev), NULL);
 
-  play_button = button_new ("../pixmaps/play.xpm", _("Play"), TRUE);
+  play_button = button_new ("play.xpm", _("Play"), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), play_button, TRUE, TRUE, 0);
   g_signal_connect (G_OBJECT (play_button), "clicked",
                     G_CALLBACK (sequence_play_clicked), NULL);
 
-  button = button_new ("../pixmaps/next.xpm", _("Next"), FALSE);
+  button = button_new ("next.xpm", _("Next"), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (sequence_next_clicked), NULL);
 
-  button = button_new ("../pixmaps/sync.xpm", _("Back to sync"), FALSE);
+  button = button_new ("sync.xpm", _("Back to sync"), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (sequence_back_to_sync), NULL);

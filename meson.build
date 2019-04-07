@@ -32,5 +32,7 @@ install_data(pixmaps, install_dir: 'share/glowcontrol/pixmaps')
 install_data('gnome/GlowControl.png', install_dir: 'share/icons/hicolor/128x128/apps/')
 install_data('gnome/GlowControl.desktop', install_dir: 'share/applications/')
 
+add_global_arguments('-DXPMDIR="' + get_option('prefix') + '/share/glowcontrol/pixmaps/"', language : 'c')
+
 executable('glowcontrol', sources, dependencies: [gtkdep, usbdep],
            install: true, install_dir: 'bin')

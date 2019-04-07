@@ -23,8 +23,7 @@
 
 static gchar *search_path[] = {
   "../pixmaps",
-  "/usr/share/glowcontrol/pixmaps",
-  "/usr/local/share/glowcontrol/pixmaps",
+  XPMDIR,
   NULL
 };
 
