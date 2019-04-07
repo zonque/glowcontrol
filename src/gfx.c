@@ -22,7 +22,11 @@
 #include "gfx.h"
 
 static gchar *search_path[] = {
-  "../pixmaps", "/usr/local/share/glowcontrol/pixmaps", NULL };
+  "../pixmaps",
+  "/usr/share/glowcontrol/pixmaps",
+  "/usr/local/share/glowcontrol/pixmaps",
+  NULL
+};
 
 GdkPixbuf *
 pixbuf_new (const gchar *filename)
