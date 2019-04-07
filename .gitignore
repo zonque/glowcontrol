@@ -1,15 +1,1 @@
-Makefile
-autom4te.cache
-config.h
-config.h.in~
-config.log
-config.status
-depcomp
-src/.deps
-src/Makefile
-stamp-h1
-Makefile.in
-aclocal.m4
-configure
-*.o
-src/glowcontrol
+build
