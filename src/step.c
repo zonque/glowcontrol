@@ -135,7 +135,7 @@ step_tick (Step *step)
     {
     case STEP_TYPE_DIMM:
       {
-        gint i, rest, old, new;
+        gint i, old, new;
         gfloat dest;
         gint chn[N_CHANNELS];
         gint val[N_CHANNELS];
@@ -143,7 +143,6 @@ step_tick (Step *step)
         if (!step->scene)
           return FALSE;
 
-        rest = step->time - step->progress;
         step->progress += N_CHANNELS/2 + 5;
 
         for (i = 0; i < N_CHANNELS; i++)

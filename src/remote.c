@@ -87,7 +87,7 @@ remote_event (GIOChannel   *chan,
 
   for (i = 0; i < ARRAY_SIZE(devices); i++)
     {
-      if (g_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
+      if (g_ascii_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
         {
           if (ev.code == devices[i].sync_event)
               sync_received = TRUE;
@@ -137,7 +137,7 @@ remote_init (void)
 
       for (i = 0; i < ARRAY_SIZE(devices); i++)
         {
-          if (g_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
+          if (g_ascii_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
             {
               fcntl (fd, F_SETFL, O_NONBLOCK);
 

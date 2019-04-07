@@ -90,7 +90,7 @@ scene_init (Scene *scene)
   scene->name = g_strdup (_("<untitled Scene>"));
   scene->project = NULL;
   scene->editor = NULL;
-  memset (scene->channel, 0, N_CHANNELS);
+  memset (scene->channel, 0, N_CHANNELS * sizeof(scene->channel));
 }
 
 static void

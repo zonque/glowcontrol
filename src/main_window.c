@@ -349,14 +349,13 @@ scene_remove_clicked (void)
 {
   Scene *scene;
   GtkTreeSelection *selection;
-  GtkTreePath *path;
   GtkTreeIter iter;
 
   selection = gtk_tree_view_get_selection (scene_view);
   if (!gtk_tree_selection_get_selected (selection, NULL, &iter))
     return;
   
-  path = gtk_tree_model_get_path (GTK_TREE_MODEL (scene_store), &iter);
+  gtk_tree_model_get_path (GTK_TREE_MODEL (scene_store), &iter);
 
   gtk_tree_model_get (GTK_TREE_MODEL (scene_store), &iter,
                       COLUMN_DATA, &scene,
@@ -393,14 +392,13 @@ step_remove_clicked (void)
 {
   Step *step;
   GtkTreeSelection *selection;
-  GtkTreePath *path;
   GtkTreeIter iter;
 
   selection = gtk_tree_view_get_selection (sequence_view);
   if (!gtk_tree_selection_get_selected (selection, NULL, &iter))
     return;
   
-  path = gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
+  gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
 
   gtk_tree_model_get (GTK_TREE_MODEL (sequence_store), &iter,
                       COLUMN_DATA, &step,
@@ -531,7 +529,6 @@ static gboolean
 sequence_tick (gpointer *foo)
 {
   GtkTreeSelection *selection;
-  GtkTreePath *path;
   GtkTreeIter iter;
   gdouble perc;
 
@@ -549,7 +546,7 @@ sequence_tick (gpointer *foo)
           return FALSE;
         }
       
-      path = gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
+      gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
   
       gtk_tree_model_get (GTK_TREE_MODEL (sequence_store), &iter,
                           COLUMN_DATA, &current_step,
@@ -592,7 +589,6 @@ static void
 sequence_play_clicked (void)
 {
   GtkTreeSelection *selection;
-  GtkTreePath *path;
   GtkTreeIter iter;
 
   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (play_button)) == FALSE)
@@ -617,7 +613,7 @@ sequence_play_clicked (void)
         return;
     }
   
-  path = gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
+  gtk_tree_model_get_path (GTK_TREE_MODEL (sequence_store), &iter);
   
   gtk_tree_model_get (GTK_TREE_MODEL (sequence_store), &iter,
                       COLUMN_DATA, &current_step,

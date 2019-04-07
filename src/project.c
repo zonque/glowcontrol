@@ -219,7 +219,7 @@ static Scene *xml_scene = NULL;
 static Step  *xml_step = NULL;
 static GtkTreeIter xml_iter;
 
-enum
+enum StateParserState
 {
   STATE_PROJECT = XML_PARSER_STATE_USER,
   STATE_SCENES,
@@ -235,7 +235,7 @@ enum
 };
 
 static XMLParserState 
-project_start_element (XMLParserState   state,
+project_start_element (XMLParserState  xml_state,
                        const gchar     *element_name,
                        const gchar    **attribute_names,
                        const gchar    **attribute_values,
@@ -243,6 +243,7 @@ project_start_element (XMLParserState   state,
                        GError         **error)
 {
   Project *project = PROJECT (user_data);
+  enum StateParserState state = (enum StateParserState) xml_state;
 
   switch (state)
     {
@@ -378,7 +379,7 @@ project_start_element (XMLParserState   state,
 }
 
 static XMLParserState 
-project_end_element   (XMLParserState   state,
+project_end_element   (XMLParserState   xml_state,
                        const gchar     *element_name,
                        const gchar     *cdata,
                        gsize            cdata_len,
@@ -386,6 +387,7 @@ project_end_element   (XMLParserState   state,
                        GError         **error)
 {
   Project *project = PROJECT (user_data);
+  enum StateParserState state = (enum StateParserState) xml_state;
 
   switch (state)
     {
@@ -472,7 +474,7 @@ project_new_from_file (const gchar  *filename,
 
   retval = xml_parser_parse_io_channel (parser, io, TRUE, error);
 
-  if (retval && xml_parser_get_state (parser) != STATE_FINISHED)
+  if (retval && (enum StateParserState) xml_parser_get_state (parser) != STATE_FINISHED)
     {
       g_printerr ("This does not look like a Glow Project file\n");
       /*
@@ -495,7 +497,7 @@ project_new_from_file (const gchar  *filename,
       project->filename = g_strdup (filename);
     }
 
-  set_mainwindow_title(g_basename(filename));
+  set_mainwindow_title(g_path_get_basename(filename));
 
   return project;
 }
@@ -581,7 +583,7 @@ project_write_to_file (Project *project,
 
   project->dirty = FALSE;
   
-  set_mainwindow_title(g_basename(filename));
+  set_mainwindow_title(g_path_get_basename(filename));
 
   return TRUE;
 }
@@ -717,7 +719,7 @@ set_step_entry (Project     *project,
       break;
     case STEP_TYPE_AUDIO:
       pixbuf = pixbuf_audio;
-      str = g_strdup_printf ("%s '%s'", _("Play audio file"), g_basename (step->filename));
+      str = g_strdup_printf ("%s '%s'", _("Play audio file"), g_path_get_basename (step->filename));
       break;
     default:
       g_warning ("unknown step type!?");

@@ -37,7 +37,6 @@ main (gint   argc,
   GtkWidget *dialog;
   GtkWidget *main_window;
 
-  g_type_init ();
   gtk_set_locale ();
   gtk_init (&argc, &argv);
   

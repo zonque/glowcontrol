@@ -101,7 +101,7 @@ output_channel_set (gint *chn,
 
   do
     {
-      i = usb_bulk_write (handle, 0x2, buf, num*2, 20);
+      i = usb_bulk_write (handle, 0x2, (const char *) buf, num*2, 20);
     }
   while (i != num*2);
 

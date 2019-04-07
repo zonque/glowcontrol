@@ -121,7 +121,7 @@ xml_parser_parse_io_channel (XMLParser     *parser,
                              GError     **error)
 {
   GIOStatus  status;
-  guchar     buffer[8196];
+  gchar      buffer[8196];
   gsize      len = 0;
   gsize      bytes;
 
