@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Icon=GlowControl
+Type=Application
+Exec=glowcontrol
+Name=GlowControl
+GenericName=GlowControl
+Comment=Software to control the Glow dimmer package
+X-Desktop-File-Install-Version=0.23
