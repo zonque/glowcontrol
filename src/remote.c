@@ -91,11 +91,13 @@ remote_event (GIOChannel   *chan,
         {
           if (ev.code == devices[i].sync_event)
             {
+              g_print ("Sync event received from device '%s', code %d\n", tmp, ev.code);
               sync_received = TRUE;
               return TRUE;
             }
 
           if (ev.code == devices[i].back_to_sync_event) {
+              g_print ("Back-to-sync event received from device '%s', code %d\n", tmp, ev.code);
               sequence_back_to_sync ();
               return TRUE;
           }
