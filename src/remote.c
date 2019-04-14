@@ -90,10 +90,15 @@ remote_event (GIOChannel   *chan,
       if (g_ascii_strncasecmp(tmp, devices[i].name, strlen(devices[i].name)) == 0)
         {
           if (ev.code == devices[i].sync_event)
+            {
               sync_received = TRUE;
+              return TRUE;
+            }
 
-          if (ev.code == devices[i].back_to_sync_event)
+          if (ev.code == devices[i].back_to_sync_event) {
               sequence_back_to_sync ();
+              return TRUE;
+          }
         }
     }
 
