@@ -59,6 +59,7 @@ scene_get_type (void)
         sizeof (Scene),
         0,              /* n_preallocs */
         (GInstanceInitFunc) scene_init,
+        NULL,
       };
       
       scene_type = g_type_register_static (G_TYPE_OBJECT,
