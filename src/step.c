@@ -167,9 +167,11 @@ step_tick (Step *step)
       step->progress += 5;
       return (step->progress < step->time);
     case STEP_TYPE_SYNC:
-      if (step->progress == RASTER)
+      if (sync_received) {
         sync_received = FALSE;
-      return !sync_received;
+        return FALSE;
+      }
+      return TRUE;
     case STEP_TYPE_AUDIO:
       audio_start (step->filename);
       return FALSE;
